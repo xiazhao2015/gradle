@@ -158,6 +158,13 @@ public class JavaCompile extends AbstractCompile {
         this.toolChain = toolChain;
     }
 
+    // TODO: add proper @see tags once the DSL is available
+
+    /**
+     * Configures the java compiler to be used to compile the Java source.
+     *
+     * @since 6.6
+     */
     @Incubating
     @Nested
     public Property<JavaCompiler> getJavaCompiler() {
@@ -171,7 +178,6 @@ public class JavaCompile extends AbstractCompile {
      */
     @Deprecated
     @TaskAction
-
     protected void compile(@SuppressWarnings("deprecation") org.gradle.api.tasks.incremental.IncrementalTaskInputs inputs) {
         DeprecationLogger.deprecate("Extending the JavaCompile task")
             .withAdvice("Configure the task instead.")
