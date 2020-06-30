@@ -158,8 +158,6 @@ public class JavaCompile extends AbstractCompile {
         this.toolChain = toolChain;
     }
 
-    // TODO: add proper @see tags once the DSL is available
-
     /**
      * Configures the java compiler to be used to compile the Java source.
      *
@@ -168,6 +166,7 @@ public class JavaCompile extends AbstractCompile {
     @Incubating
     @Nested
     public Property<JavaCompiler> getJavaCompiler() {
+        // TODO: add proper @see tags once the DSL is available
         return javaCompiler;
     }
 
