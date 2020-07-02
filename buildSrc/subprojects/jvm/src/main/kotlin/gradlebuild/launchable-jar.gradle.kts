@@ -49,12 +49,9 @@ val startScripts = tasks.register<GradleStartScriptGenerator>("startScripts") {
     launcherJar.from(tasks.jar)
 }
 
-configurations {
-    create("gradleScriptsElements") {
-        isVisible = false
-        isCanBeResolved = false
-        isCanBeConsumed = true
-        attributes.attribute(Usage.USAGE_ATTRIBUTE, objects.named("start-scripts"))
-        outgoing.artifact(startScripts)
+jvm.createOutgoingElements("gradleScriptsElements") {
+    attributes {
+        library("start-scripts")
     }
+    addArtifact(startScripts)
 }
