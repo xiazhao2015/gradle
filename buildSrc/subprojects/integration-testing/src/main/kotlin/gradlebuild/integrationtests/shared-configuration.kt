@@ -22,10 +22,7 @@ import gradlebuild.integrationtests.tasks.IntegrationTest
 
 import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.attributes.Category
-import org.gradle.api.attributes.LibraryElements
-import org.gradle.api.attributes.Usage
+import org.gradle.api.plugins.JvmPluginExtension
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
@@ -44,26 +41,59 @@ enum class TestType(val prefix: String, val executers: List<String>) {
 
 
 fun Project.addDependenciesAndConfigurations(prefix: String) {
+    val jvm = the<JvmPluginExtension>()
+
+    jvm.createResolvableConfiguration("${prefix}TestDistributionRuntimeClasspath") {
+        usingDependencyBucket("${prefix}TestDistributionRuntimeOnly") // "Declare the distribution that is required to run tests"
+        attributes {
+            library("gradle-bin-installation")
+        }
+    }
+    jvm.createResolvableConfiguration("${prefix}TestFullDistributionRuntimeClasspath") {
+        attributes {
+            library("gradle-bin-installation")
+        }
+    }
+    jvm.createResolvableConfiguration("${prefix}TestLocalRepositoryPath") {
+        usingDependencyBucket("${prefix}TestLocalRepository") // "Declare a local repository required as input data for the tests (e.g. :toolingApi)")
+        attributes {
+            library("gradle-local-repository")
+        }
+    }
+    jvm.createResolvableConfiguration("${prefix}TestNormalizedDistributionPath") {
+        usingDependencyBucket("${prefix}TestNormalizedDistribution") // "Declare a normalized distribution (bin distribution without timestamp in version) to be used in tests")
+        attributes {
+            library("gradle-normalized-distribution-zip")
+        }
+    }
+    jvm.createResolvableConfiguration("${prefix}TestBinDistributionPath") {
+        usingDependencyBucket("${prefix}TestBinDistribution") // "Declare a bin distribution to be used by tests - useful for testing the final distribution that is published")
+        attributes {
+            library("gradle-bin-distribution-zip")
+        }
+    }
+    jvm.createResolvableConfiguration("${prefix}TestAllDistributionPath") {
+        usingDependencyBucket("${prefix}TestAllDistribution") // "Declare a all distribution to be used by tests - useful for testing the final distribution that is published")
+        attributes {
+            library("gradle-all-distribution-zip")
+        }
+    }
+    jvm.createResolvableConfiguration("${prefix}TestDocsDistributionPath") {
+        usingDependencyBucket("${prefix}TestDocsDistribution") // "Declare a docs distribution to be used by tests - useful for testing the final distribution that is published")
+        attributes {
+            library("gradle-docs-distribution-zip")
+        }
+    }
+    jvm.createResolvableConfiguration("${prefix}TestSrcDistributionPath") {
+        usingDependencyBucket("${prefix}TestSrcDistribution") // "Declare a src distribution to be used by tests - useful for testing the final distribution that is published")
+        attributes {
+            library("gradle-src-distribution-zip")
+        }
+    }
+
     configurations {
         getByName("${prefix}TestImplementation") { extendsFrom(configurations["testImplementation"]) }
-
-        val distributionRuntimeOnly = bucket("${prefix}TestDistributionRuntimeOnly", "Declare the distribution that is required to run tests")
-        val localRepository = bucket("${prefix}TestLocalRepository", "Declare a local repository required as input data for the tests (e.g. :toolingApi)")
-        val normalizedDistribution = bucket("${prefix}TestNormalizedDistribution", "Declare a normalized distribution (bin distribution without timestamp in version) to be used in tests")
-        val binDistribution = bucket("${prefix}TestBinDistribution", "Declare a bin distribution to be used by tests - useful for testing the final distribution that is published")
-        val allDistribution = bucket("${prefix}TestAllDistribution", "Declare a all distribution to be used by tests - useful for testing the final distribution that is published")
-        val docsDistribution = bucket("${prefix}TestDocsDistribution", "Declare a docs distribution to be used by tests - useful for testing the final distribution that is published")
-        val srcDistribution = bucket("${prefix}TestSrcDistribution", "Declare a src distribution to be used by tests - useful for testing the final distribution that is published")
-
-        getByName("${prefix}TestRuntimeClasspath") { extendsFrom(distributionRuntimeOnly) }
-        resolver("${prefix}TestDistributionRuntimeClasspath", "gradle-bin-installation", distributionRuntimeOnly)
-        resolver("${prefix}TestFullDistributionRuntimeClasspath", "gradle-bin-installation")
-        resolver("${prefix}TestLocalRepositoryPath", "gradle-local-repository", localRepository)
-        resolver("${prefix}TestNormalizedDistributionPath", "gradle-normalized-distribution-zip", normalizedDistribution)
-        resolver("${prefix}TestBinDistributionPath", "gradle-bin-distribution-zip", binDistribution)
-        resolver("${prefix}TestAllDistributionPath", "gradle-all-distribution-zip", allDistribution)
-        resolver("${prefix}TestDocsDistributionPath", "gradle-docs-distribution-zip", docsDistribution)
-        resolver("${prefix}TestSrcDistributionPath", "gradle-src-distribution-zip", srcDistribution)
+        getByName("${prefix}TestRuntimeClasspath") { extendsFrom(configurations["${prefix}TestDistributionRuntimeOnly"]) }
     }
 
     if (name != "test") {
@@ -200,30 +230,5 @@ fun Test.excludeCategories(vararg categories: String) {
         (options as JUnitOptions).excludeCategories(*categories)
     } else {
         (options as JUnitPlatformOptions).excludeTags(*categories)
-    }
-}
-
-
-private
-fun Project.bucket(name: String, description: String) = configurations.create(name) {
-    isVisible = false
-    isCanBeResolved = false
-    isCanBeConsumed = false
-    this.description = description
-}
-
-
-private
-fun Project.resolver(name: String, libraryElements: String, extends: Configuration? = null) = configurations.create(name) {
-    attributes {
-        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(libraryElements))
-    }
-    isCanBeResolved = true
-    isCanBeConsumed = false
-    isVisible = false
-    if (extends != null) {
-        extendsFrom(extends)
     }
 }

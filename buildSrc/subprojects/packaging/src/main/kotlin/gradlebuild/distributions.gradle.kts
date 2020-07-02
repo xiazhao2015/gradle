@@ -105,7 +105,7 @@ val sourcesPath = jvm.createResolvableConfiguration("sourcesPath") {
     attributes {
         documentation("gradle-source-folders")
     }
- }
+}
 sourcesPath.description = "Resolves the source code of all Gradle modules Jars (required for the All distribution)"
 
 val docsPath = jvm.createResolvableConfiguration("docsPath") {
