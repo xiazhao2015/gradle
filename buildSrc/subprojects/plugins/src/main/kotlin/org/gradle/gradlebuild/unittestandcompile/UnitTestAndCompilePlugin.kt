@@ -55,6 +55,7 @@ import org.gradle.testretry.TestRetryPlugin
 import testLibrary
 import java.util.concurrent.Callable
 import java.util.jar.Attributes
+import org.gradle.gradlebuild.test.integrationtests.DistributionTest
 
 
 @Suppress("unused")
@@ -260,7 +261,7 @@ class UnitTestAndCompilePlugin : Plugin<Project> {
                     maxRetries.set(1)
                     maxFailures.set(10)
                 }
-                if (distributionPluginEnabled) {
+                if (this is DistributionTest && distributionPluginEnabled) {
                     distribution {
                         maxLocalExecutors.set(System.getProperty("max.local.executors")?.toInt() ?: 0)
                         enabled.set(true)

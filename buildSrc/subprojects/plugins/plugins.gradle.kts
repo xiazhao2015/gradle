@@ -6,6 +6,7 @@ dependencies {
     implementation(project(":performance"))
     implementation(project(":versioning"))
     implementation(project(":packaging"))
+    implementation(project(":integrationTesting"))
 
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r")
     implementation("org.jsoup:jsoup:1.11.3")
