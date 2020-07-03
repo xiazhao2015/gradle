@@ -184,7 +184,7 @@ jvm.createOutgoingElements("runtime") {
     addArtifact(runtimeApiInfoJar)
 }
 // To make all source code of a distribution accessible transitively
-jvm.createOutgoingElements("transitiveSources") {
+jvm.createOutgoingElements("transitiveSourcesElements") {
     extendsFrom(configurations["coreRuntimeOnly"], configurations["pluginsRuntimeOnly"])
     attributes {
         documentation("gradle-source-folders")

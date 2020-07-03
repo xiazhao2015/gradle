@@ -108,13 +108,10 @@ fun Project.addDependenciesAndConfigurations(prefix: String) {
 
 internal
 fun Project.addSourceSet(testType: TestType): SourceSet {
-    val prefix = testType.prefix
     val sourceSets = the<SourceSetContainer>()
-    val main by sourceSets.getting
-    return sourceSets.create("${prefix}Test") {
-        compileClasspath += main.output
-        runtimeClasspath += main.output
-    }
+    val jvm = the<JvmPluginExtension>()
+    jvm.createJvmVariant("${testType.prefix}Test") { }
+    return sourceSets["${testType.prefix}Test"]
 }
 
 

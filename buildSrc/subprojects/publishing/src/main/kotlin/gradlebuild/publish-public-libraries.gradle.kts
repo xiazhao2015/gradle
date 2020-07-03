@@ -124,18 +124,12 @@ fun publishNormalizedToLocalRepository() {
     }
 
     // For local consumption by tests
-    configurations.create("localLibsRepositoryElements") {
+    jvm.createOutgoingElements("localLibsRepositoryElements") {
         attributes {
-            attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_RUNTIME))
-            attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
-            attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named("gradle-local-repository"))
-            attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling.EMBEDDED))
+            library("gradle-local-repository")
         }
-        isCanBeResolved = false
-        isCanBeConsumed = true
-        isVisible = false
-        outgoing.artifact(localRepository) {
-            builtBy(localPublish)
-        }
+        // FIXME this does not work but probably should?
+        // https://e.grdev.net/s/fgpknhshnkow2/failure?anchor=e30&focused-exception-line=0-1-2-0
+        addArtifact(localPublish.map { localRepository })
     }
 }
