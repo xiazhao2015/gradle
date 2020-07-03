@@ -161,7 +161,7 @@ public class JavaCompile extends AbstractCompile {
     /**
      * Configures the java compiler to be used to compile the Java source.
      *
-     * @since 6.6
+     * @since 6.7
      */
     @Incubating
     @Nested
